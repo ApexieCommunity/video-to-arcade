@@ -58,19 +58,18 @@ radioButtons.forEach(radioButton => {
 
 form.addEventListener("submit", function convertImage(event) {
 	event.preventDefault()
-	const imageDOM = document.querySelector("img")
-	if (originalImageSize.width === 0 && originalImageSize.height === 0) {
-		originalImageSize.width = imageDOM.width
-		originalImageSize.height = imageDOM.height
-	}
-	img = document.querySelector("img")
-	convert(img)
-	resetImageSize(img)
+	document.querySelectorAll("img").forEach(img => {
+		const imageDOM = document.querySelector("img")
+		if (originalImageSize.width === 0 && originalImageSize.height === 0) {
+			originalImageSize.width = imageDOM.width
+			originalImageSize.height = imageDOM.height
+		}
+		convert(img)
+		resetImageSize(img)
+	});
 })
 
-function convert(img) {
-	// originalImageSize
-	copyButton.innerText = "Copy code" // Reset text if another image is uploaded
+function convertFrame(img) {
 	const arcadeColors = [
 		"#00000000", // Transparent
 		"#ffffff",
@@ -212,21 +211,25 @@ function convert(img) {
 		pixelIndex++
 	}
 
-	// Loop through the makeCodeString object to create the output
-	let dateString = new Date()
-		.toISOString()
-		.replaceAll("-", "")
-		.replaceAll(":", "")
-		.replaceAll(".", "")
-	let spriteJavaScript = `let mySprite${dateString} = sprites.create(img\``
+	let frameJavaScript = `img\``
 	for (const row in makeCodeString) {
-		spriteJavaScript += makeCodeString[row] + "\n"
+		frameJavaScript += makeCodeString[row] + "\n"
 	}
-	spriteJavaScript += "`, SpriteKind.Player)"
+	frameJavaScript += `\``
+	return frameJavaScript
+}
+/**
+ * @param {string[]} img
+ */
+function convert(img) {
+	const arrayCode = img.map(convertFrame).join(",\n")
+	copyButton.innerText = "Copy code" // Reset text if another image is uploaded
+	const backgroundCode = `let index = 0`
+	backgroundCode += `let videoFrames = ${arrayCode}`
 
 	// Copy text when user clicks button
 	// Sure, they can copy it themselves, but it's good to do nice things sometimes.
-	textarea.textContent = spriteJavaScript
+	textarea.textContent = backgroundCode
 	copyButton.removeAttribute("disabled")
 
 	copyButton.addEventListener("click", function addCodeToClipboard() {
