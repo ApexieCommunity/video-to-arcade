@@ -221,10 +221,19 @@ function convertFrame(img) {
  * @param {string[]} img
  */
 function convert(img) {
-	const arrayCode = img.map(convertFrame).join(",\n")
+	const arrayCode = img.map(convertFrame).join(", ")
 	copyButton.innerText = "Copy code" // Reset text if another image is uploaded
 	const backgroundCode = `let index = 0`
 	backgroundCode += `let videoFrames = ${arrayCode}`
+	backgroundCode += `forever(() => {`
+	backgroundCode += `    if (index == videoFrames.length) {`
+	backgroundCode += `        index = 0`
+	backgroundCode += `    } else {`
+	backgroundCode += `        index++`
+	backgroundCode += `    }`
+	backgroundCode += `    scene.setBackgroundImage(videoFrames[index])`
+	backgroundCode += `    pause(100)`
+	backgroundCode += `})`
 
 	// Copy text when user clicks button
 	// Sure, they can copy it themselves, but it's good to do nice things sometimes.
