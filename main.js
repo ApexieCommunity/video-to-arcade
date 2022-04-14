@@ -1,5 +1,4 @@
 let mode = "full-width"
-// https://makecode.com/_EvPP98M4pYEC
 
 /**
  * To do:
