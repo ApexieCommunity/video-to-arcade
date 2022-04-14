@@ -221,7 +221,10 @@ function convertFrame(img) {
  * @param {string[]} img
  */
 function convert(img) {
-	const arrayCode = img.map(convertFrame).join(", ")
+	let arrayCode
+	for (let i = 0; i < img.length; i++) {
+		arrayCode += `${convertFrame(img[i])}\n`
+	}
 	copyButton.innerText = "Copy code" // Reset text if another image is uploaded
 	const backgroundCode = `let index = 0`
 	backgroundCode += `let videoFrames = ${arrayCode}`
