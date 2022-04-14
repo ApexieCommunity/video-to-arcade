@@ -1,5 +1,5 @@
 {
-  "name": "Convert-Image-to-MakeCode-Arcade-Sprite",
+  "name": "video-to-makecode-arcade",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -8,13 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kristianpedersen/Convert-Image-to-MakeCode-Arcade-Sprite.git"
+    "url": "git+https://github.com/ApexieCommunity/video-to-arcade.git"
   },
   "keywords": [],
-  "author": "",
+  "authors": [
+    "ItzLightyHD",
+    "kristianpedersen"
+  ],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/kristianpedersen/Convert-Image-to-MakeCode-Arcade-Sprite/issues"
+    "url": "https://github.com/ApexieCommunity/video-to-arcade/issues"
   },
   "homepage": "https://kristianpedersen.github.io/Convert-Image-to-MakeCode-Arcade-Sprite",
   "dependencies": {
