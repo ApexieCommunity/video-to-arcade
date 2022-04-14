@@ -25,12 +25,15 @@ let originalImageSize = {
 }
 
 fileInput.addEventListener("change", function whenImageIsUploaded() {
-	const img = document.createElement("img")
+	let img = document.createElement("img")
 	img.src = window.URL.createObjectURL(this.files[0])
-	const node = document.querySelector("img")
-
-	if (node !== null) {
-		node.parentNode.removeChild(node)
+	let imgArray = []
+	for(let i = 0; i < this.files.length; i++) {
+		var image = new Image()
+		image.width = this.files[i].width
+		image.height = this.files[i].height
+		image.src = window.URL.createObjectURL(this.files[i])
+		imgArray.push(image)
 	}
 
 	document.body.appendChild(img)
@@ -38,20 +41,8 @@ fileInput.addEventListener("change", function whenImageIsUploaded() {
 	img.addEventListener("load", () => {
 		originalImageSize.width = img.width
 		originalImageSize.height = img.height
-		mode = "full-width"
-		convert(document.querySelectorAll("img"))
-	})
-})
-
-radioButtons.forEach(radioButton => {
-	radioButton.addEventListener("change", function sizeOption() {
-		mode = this.id
-		const numberInput = this.parentElement.querySelector("input[type='number']")
-		customSizes.forEach(field => field.disabled = (mode !== "custom"))
-		scaleFactor.disabled = (mode !== "scale")
-		scaleFactor.value = 0.1
-		img = document.querySelector("img")
-		convert(img)
+		console.log(imgArray)
+		convert(imgArray)
 	})
 })
 
@@ -62,9 +53,16 @@ form.addEventListener("submit", function convertImage(event) {
 		originalImageSize.width = imageDOM.width
 		originalImageSize.height = imageDOM.height
 	}
-	const img = document.querySelectorAll("img")
-	convert(img)
-	resetImageSize(img)
+	let imgArray = []
+	for(let i = 0; i < this.files.length; i++) {
+		var image = new Image()
+		image.width = this.files[i].width
+		image.height = this.files[i].height
+		image.src = window.URL.createObjectURL(this.files[i])
+		imgArray.push(image)
+	}
+	convert(imgArray)
+	resetImageSize(imageDOM)
 })
 
 function convertFrame(img) {
@@ -146,7 +144,6 @@ function convertFrame(img) {
 		}
 		img.width = imageWidth
 		img.height = imageHeight
-		copyButton.innerText += ` (${img.width} x ${img.height})`
 	}
 
 	setSpriteDimensions(mode) // Mode is set when radio buttons are clicked. Default is full-width.
@@ -220,13 +217,14 @@ function convertFrame(img) {
  * @param {string[]} img
  */
 function convert(img) {
-	let arrayCode
+	let arrayCode = ``
 	for (let i = 0; i < img.length; i++) {
-		arrayCode += `${convertFrame(img[i])}\n`
+		i = i % img.length
+		arrayCode += convertFrame(img[i]) + `, `
 	}
 	copyButton.innerText = "Copy code" // Reset text if another image is uploaded
 	let backgroundCode = `let index = 0\n`
-	backgroundCode += `let videoFrames = ${arrayCode}\n`
+	backgroundCode += `let videoFrames = [${arrayCode}]\n`
 	backgroundCode += `forever(() => {\n`
 	backgroundCode += `    if (index == videoFrames.length) {\n`
 	backgroundCode += `        index = 0\n`
@@ -245,7 +243,7 @@ function convert(img) {
 	copyButton.addEventListener("click", function addCodeToClipboard() {
 		textarea.select()
 		document.execCommand("copy")
-		console.log("copy!");
+		console.log("Code copied successfully!");
 		copyButton.innerText = "Code copied to clipboard!"
 		resetImageSize(img)
 	})
