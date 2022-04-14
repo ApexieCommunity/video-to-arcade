@@ -39,7 +39,7 @@ fileInput.addEventListener("change", function whenImageIsUploaded() {
 		originalImageSize.width = img.width
 		originalImageSize.height = img.height
 		mode = "full-width"
-		convert(img)
+		convert(document.querySelectorAll("img"))
 	})
 })
 
@@ -57,15 +57,14 @@ radioButtons.forEach(radioButton => {
 
 form.addEventListener("submit", function convertImage(event) {
 	event.preventDefault()
-	document.querySelectorAll("img").forEach(img => {
-		const imageDOM = document.querySelector("img")
-		if (originalImageSize.width === 0 && originalImageSize.height === 0) {
-			originalImageSize.width = imageDOM.width
-			originalImageSize.height = imageDOM.height
-		}
-		convert(img)
-		resetImageSize(img)
-	});
+	const imageDOM = document.querySelector("img")
+	if (originalImageSize.width === 0 && originalImageSize.height === 0) {
+		originalImageSize.width = imageDOM.width
+		originalImageSize.height = imageDOM.height
+	}
+	const img = document.querySelectorAll("img")
+	convert(img)
+	resetImageSize(img)
 })
 
 function convertFrame(img) {
@@ -226,16 +225,16 @@ function convert(img) {
 		arrayCode += `${convertFrame(img[i])}\n`
 	}
 	copyButton.innerText = "Copy code" // Reset text if another image is uploaded
-	const backgroundCode = `let index = 0`
-	backgroundCode += `let videoFrames = ${arrayCode}`
-	backgroundCode += `forever(() => {`
-	backgroundCode += `    if (index == videoFrames.length) {`
-	backgroundCode += `        index = 0`
-	backgroundCode += `    } else {`
-	backgroundCode += `        index++`
-	backgroundCode += `    }`
-	backgroundCode += `    scene.setBackgroundImage(videoFrames[index])`
-	backgroundCode += `    pause(100)`
+	let backgroundCode = `let index = 0\n`
+	backgroundCode += `let videoFrames = ${arrayCode}\n`
+	backgroundCode += `forever(() => {\n`
+	backgroundCode += `    if (index == videoFrames.length) {\n`
+	backgroundCode += `        index = 0\n`
+	backgroundCode += `    } else {\n`
+	backgroundCode += `        index++\n`
+	backgroundCode += `    }\n`
+	backgroundCode += `    scene.setBackgroundImage(videoFrames[index])\n`
+	backgroundCode += `    pause(100)\n`
 	backgroundCode += `})`
 
 	// Copy text when user clicks button
