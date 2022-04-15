@@ -1,5 +1,6 @@
 let mode = "full-width"
 const gifFrames = require("gif-frames")
+const jszip = require("jszip")
 
 const canvas = document.querySelector("canvas")
 const copyButton = document.querySelector("button#copy")
@@ -11,6 +12,9 @@ let originalImageSize = {
 	width: 0,
 	height: 0
 }
+
+let randomFolderName = Math.random().toString(36).substring(2, 15)
+let isUsingZip = false
 
 fileInput.addEventListener("change", function whenImageIsUploaded() {
 	let img = document.createElement("img")
@@ -32,6 +36,29 @@ fileInput.addEventListener("change", function whenImageIsUploaded() {
                 console.log(gifFrameArray)
                 convert(gifFrameArray)
             })
+		})
+	} else if(this.files[0].name.endsWith(".zip")) {
+		isUsingZip = true
+		var zip = new jszip()
+		zip.loadAsync(this.files[0]).then(function(zip) {
+			let videoFrameArray = new Array()
+			zip.forEach(function(relativePath, file) {
+				if(file.name.endsWith(".png")) {
+					let image = new Image()
+					file.async("base64").then(function(data) {
+						image.src = "data:image/png;base64," + data
+						console.log(image.src)
+						videoFrameArray.push(image)
+					})
+				}
+			})
+
+			img.addEventListener("load", () => {
+				originalImageSize.width = videoFrameArray[0].width
+				originalImageSize.height = videoFrameArray[0].height
+				console.log(videoFrameArray)
+				convert(videoFrameArray)
+			})
 		})
 	} else {
 		let imgArray = new Array()
@@ -252,9 +279,21 @@ function convert(img) {
 
 	copyButton.addEventListener("click", function addCodeToClipboard() {
 		textarea.select()
-		document.execCommand("copy")
-		console.log("Code copied successfully!");
-		copyButton.innerText = "Code copied to clipboard!"
+		if (!navigator.clipboard) {
+			document.execCommand("copy")
+		} else {
+			navigator.clipboard.writeText(textarea.textContent).then(
+				function(){
+					console.log("Copied to clipboard!")
+					copyButton.innerText = "Code copied to clipboard!"
+				})
+			  .catch(
+				 function(e) {
+					console.log("Could not copy to clipboard!")
+					console.error(e)
+					copyButton.innerText = "Could not copy to clipboard!"
+			  });
+		}
 		resetImageSize(img)
 	})
 }

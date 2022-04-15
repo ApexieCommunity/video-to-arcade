@@ -1,7 +1,7 @@
 <img src="logo.png" alt="Video to MakeCode Arcade" align="right" height="256px">
 <div align="center">
   <h1>Video to Arcade</h1>
-  <h3>A website/PWA to convert multiple video frames in MakeCode Arcade code to paste.</h3>
+  <h3>A web app to convert multiple video frames in MakeCode Arcade code to paste.</h3>
 
 ![Repository Size](https://img.shields.io/github/repo-size/ApexieCommunity/video-to-arcade)
 ![Issues](https://img.shields.io/github/issues/ApexieCommunity/video-to-arcade)
