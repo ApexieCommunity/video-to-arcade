@@ -12,7 +12,7 @@ let mode = "full-width"
 const canvas = document.querySelector("canvas")
 const copyButton = document.querySelector("button#copy")
 const customSizes = document.querySelectorAll("input[type='number'].custom")
-const fileInput = document.querySelector("input#myFile")
+const fileInput = document.querySelector("input#uploadFile")
 const form = document.querySelector("form")
 const numberInputs = document.querySelectorAll("input[type='number']")
 const radioButtons = document.querySelectorAll("input[type='radio']")

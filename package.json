@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "deploy": "gh-pages -d ./"
+    "deploy": "gh-pages -d ./",
+    "serve": "npx serve"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
   },
   "homepage": "https://kristianpedersen.github.io/Convert-Image-to-MakeCode-Arcade-Sprite",
   "dependencies": {
+    "express": "^4.17.3",
     "gh-pages": "^2.2.0"
   }
 }
