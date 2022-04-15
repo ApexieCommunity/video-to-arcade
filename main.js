@@ -27,16 +27,18 @@ let originalImageSize = {
 fileInput.addEventListener("change", function whenImageIsUploaded() {
 	let img = document.createElement("img")
 	img.src = window.URL.createObjectURL(this.files[0])
-	let imgArray = []
+	let imgArray = new Array()
 	for(let i = 0; i < this.files.length; i++) {
+		i = i % this.files.length
 		var image = new Image()
 		image.width = this.files[i].width
 		image.height = this.files[i].height
+		image.id = this.files[i].name
 		image.src = window.URL.createObjectURL(this.files[i])
 		imgArray.push(image)
+		imgArray.sort((a, b) => a.id - b.id)
+		document.body.appendChild(img)
 	}
-
-	document.body.appendChild(img)
 
 	img.addEventListener("load", () => {
 		originalImageSize.width = img.width
@@ -53,14 +55,19 @@ form.addEventListener("submit", function convertImage(event) {
 		originalImageSize.width = imageDOM.width
 		originalImageSize.height = imageDOM.height
 	}
-	let imgArray = []
+	let imgArray = new Array()
 	for(let i = 0; i < this.files.length; i++) {
+		i = i % this.files.length
 		var image = new Image()
 		image.width = this.files[i].width
 		image.height = this.files[i].height
+		image.id = this.files[i].name
 		image.src = window.URL.createObjectURL(this.files[i])
 		imgArray.push(image)
+		imgArray.sort((a, b) => a.id - b.id)
+		document.body.appendChild(img)
 	}
+	console.log(imgArray)
 	convert(imgArray)
 	resetImageSize(imageDOM)
 })
@@ -184,10 +191,6 @@ function convertFrame(img) {
 			return rDifference + gDifference + bDifference
 		})[0]
 
-		// Draw a preview
-		c.fillStyle = `rgb(${nearest.color.r}, ${nearest.color.g}, ${nearest.color.b})`
-		c.fillRect(x, y, 1, 1)
-
 		/*
 		makeCodeString is a piece of working code that can be directly
 		pasted into MakeCode's JavaScript window.
@@ -226,7 +229,7 @@ function convert(img) {
 	let backgroundCode = `let index = 0\n`
 	backgroundCode += `let videoFrames = [${arrayCode}]\n`
 	backgroundCode += `forever(() => {\n`
-	backgroundCode += `    if (index == videoFrames.length) {\n`
+	backgroundCode += `    if (index == videoFrames.length - 1) {\n`
 	backgroundCode += `        index = 0\n`
 	backgroundCode += `    } else {\n`
 	backgroundCode += `        index++\n`
