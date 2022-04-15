@@ -37,7 +37,6 @@ fileInput.addEventListener("change", function whenImageIsUploaded() {
 		image.src = window.URL.createObjectURL(this.files[i])
 		imgArray.push(image)
 		imgArray.sort((a, b) => a.id - b.id)
-		document.body.appendChild(img)
 	}
 
 	img.addEventListener("load", () => {
@@ -65,7 +64,6 @@ form.addEventListener("submit", function convertImage(event) {
 		image.src = window.URL.createObjectURL(this.files[i])
 		imgArray.push(image)
 		imgArray.sort((a, b) => a.id - b.id)
-		document.body.appendChild(img)
 	}
 	console.log(imgArray)
 	convert(imgArray)
