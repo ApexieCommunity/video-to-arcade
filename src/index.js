@@ -18,10 +18,10 @@ let originalImageSize = {
 	height: 0
 }
 
-fileInput.addEventListener("change", function whenImageIsUploaded() {
+fileInput.addEventListener("change", async function whenImageIsUploaded() {
 	if(this.files[0].name.endsWith(".gif")) {
-		gifFrames({ url: window.URL.createObjectURL(this.files[0]), frames: "all", outputType: "canvas", cumulative: true }).then(function(frameData) {
-            let gifFrameArray = new Array()
+		let gifFrameArray = new Array()
+		await gifFrames({ url: window.URL.createObjectURL(this.files[0]), frames: "all", outputType: "canvas", cumulative: true }).then(function(frameData) {
             frameData.forEach(function(frame) {
                 var image = new Image()
                 image.width = frame.frameInfo.width
@@ -29,12 +29,11 @@ fileInput.addEventListener("change", function whenImageIsUploaded() {
                 image.src = frame.getImage().toDataURL()
                 gifFrameArray.push(image)
             })
-
-            originalImageSize.width = frameData[0].frameInfo.width
-            originalImageSize.height = frameData[0].frameInfo.height
-            console.log(gifFrameArray)
-            convert(gifFrameArray)
 		})
+		originalImageSize.width = frameData[0].frameInfo.width
+        originalImageSize.height = frameData[0].frameInfo.height
+        console.log(gifFrameArray)
+        convert(gifFrameArray)
 	} /** else if(this.files[0].name.endsWith(".mp4")) {
 		let file = this.files[0]
 		let fileName = file.name
@@ -120,20 +119,24 @@ fileInput.addEventListener("change", function whenImageIsUploaded() {
 		})
 	} */ else {
 		let imgArray = new Array()
-		for(let i = 0; i < this.files.length; i++) {
-			i = i % this.files.length
-			var image = new Image()
-			image.width = this.files[i].width
-			image.height = this.files[i].height
-			image.id = this.files[i].name
-			image.src = window.URL.createObjectURL(this.files[i])
-			imgArray.push(image)
-			imgArray.sort((a, b) => a.id - b.id)
+		async function pushFrames() {
+			for(let i = 0; i < this.files.length; i++) {
+				i = i % this.files.length
+				var image = new Image()
+				image.width = this.files[i].width
+				image.height = this.files[i].height
+				image.id = this.files[i].name
+				image.src = window.URL.createObjectURL(this.files[i])
+				imgArray.push(image)
+				imgArray.sort((a, b) => a.id - b.id)
+			}
 		}
-		originalImageSize.width = img.width
-		originalImageSize.height = img.height
-		console.log(imgArray)
-		convert(imgArray)
+		await pushFrames().then(() => {
+			originalImageSize.width = img.width
+			originalImageSize.height = img.height
+			console.log(imgArray)
+			convert(imgArray)
+		})
 	}
 })
 
