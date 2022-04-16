@@ -30,8 +30,8 @@ fileInput.addEventListener("change", async function whenImageIsUploaded() {
                 gifFrameArray.push(image)
             })
 		})
-		originalImageSize.width = frameData[0].frameInfo.width
-        originalImageSize.height = frameData[0].frameInfo.height
+		originalImageSize.width = gifFrameArray[0].width
+        originalImageSize.height = gifFrameArray[0].height
         console.log(gifFrameArray)
         convert(gifFrameArray)
 	} /** else if(this.files[0].name.endsWith(".mp4")) {
