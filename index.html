@@ -4,16 +4,16 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="A website/PWA that allows you to convert video frames into MakeCode Arcade code to paste."/>
+	<meta name="description" content="A web app that allows you to convert GIFs (and also video frames) into MakeCode Arcade code to paste."/>
 	<meta name="url" content="https://video.arcade.apexie.eu">
 	<link rel="icon" type="image/png" href="logo.png">
 	<meta property="og:title" content="Video to MakeCode Arcade" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://video.arcade.apexie.eu" />
 	<meta property="og:image" content="https://video.arcade.apexie.eu/logo.png" />
-	<meta property="og:description" content="A website/PWA that allows you to convert video frames into MakeCode Arcade code to paste." />
+	<meta property="og:description" content="A web app that allows you to convert GIFs (and also video frames) into MakeCode Arcade code to paste." />
 	<title>Video to Arcade background</title>
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="css/style.css">
 	<!-- PWA Stuff -->
 	<link rel="manifest" href="manifest.json">
 	<!-- PWA Apple Standards -->
@@ -46,7 +46,7 @@
 	<link rel="apple-touch-startup-image" href="icons/apple-splash-640-1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 	<link rel="apple-touch-startup-image" href="icons/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
 	<!-- Bootstrap -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link href="./css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 
 <body>
@@ -56,11 +56,11 @@
 				<img src="/logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
 				v2a
 			</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item">
 						<a class="nav-link" href="https://github.com/ApexieCommunity/video-to-arcade">GitHub</a>
 					</li>
@@ -74,21 +74,27 @@
 	<div class="container">
 		<div class="mt-3 col-md-12" id="info" style="max-width:100%;height:auto;">
 			<ol>
-				<li>Convert the video in multiple video frames if you're going to convert a video.</li>
-				<li>Upload multiple video frames or the GIF (GIFs work better).</li>
+				<li>Upload the GIF file.</li>
 				<li>Paste the code below into MakeCode's JavaScript tab.</li>
 				<li>(Optional) Adjust the value in the pause() function until the video reaches normal speed.</li>
 			</ol>
 		</div>
+		<div class="mt-3 col-md-12" id="url_input">
+			<label>Paste the URL of the GIF file here:</label>
+			<div class="input-group mb-3">
+				<button class="btn btn-outline-secondary" type="button" id="url-button">Submit</button>
+				<input class="form-control form-control-sm" type="text" id="url" placeholder="https://c.tenor.com/_4YgA77ExHEAAAAC/rick-roll.gif">
+			</div>
+		</div>
 		<form action="#" method="POST" style="max-width:100%;height:auto;">
 			<div class="mb-3">
-				<input class="form-control form-control-sm" type="file" id="uploadFile" name="filename" multiple="multiple">
+				<input class="form-control form-control-sm" type="file" id="uploadFile" accept="image/*, .mp4, .zip" name="filename" multiple="multiple">
 			</div>
 			<button type="button" class="btn btn-dark" id="copy" disabled>Copy code</button>
 			<!-- <button type="submit" disabled style="visibility: hidden;">Apply setting</button> -->
 		</form>
 		<div class="mt-3 col-md-12">
-			<textarea class="form-control" cols="200" rows="30" style="max-width:100%;height:auto;"></textarea>
+			<textarea id="code" class="form-control" cols="200" rows="30" style="max-width:100%;height:auto;"></textarea>
 		</div>
 		<canvas width=0 height=0></canvas>
 	</div>
@@ -99,6 +105,7 @@
 		</div>
 	</footer>
 	
+	<!-- Main script -->
 	<script src="main.js"></script>
 
 	<!-- Registering the service worker -->
@@ -114,11 +121,16 @@
 		}
 	</script>
 
-	<!-- Other libraries -->
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 	<!-- Bootstrap -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<script src="./src/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+	<!-- Other libraries -->
+	<script src="./src/jquery.min.js"></script>
+	<script src="./src/m2g/LZWEncoder.js"></script>
+	<script src="./src/m2g/NeuQuant.js"></script>
+	<script src="./src/m2g/GIFEncoder.js"></script>
+	<script src="./src/m2g/b64.js"></script>
+
 </body>
 
 </html>

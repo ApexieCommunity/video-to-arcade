@@ -1,26 +1,26 @@
+'use strict';
+
 let mode = "full-width"
 const gifFrames = require("gif-frames")
 const jszip = require("jszip")
+const jquery = require("jquery")
+const axios = require("axios")
 
 const canvas = document.querySelector("canvas")
 const copyButton = document.querySelector("button#copy")
 const fileInput = document.querySelector("input#uploadFile")
 const form = document.querySelector("form")
-const textarea = document.querySelector("textarea")
+const url = document.getElementById("url")
+const textarea = document.querySelector("textarea#code")
 
 let originalImageSize = {
 	width: 0,
 	height: 0
 }
 
-let randomFolderName = Math.random().toString(36).substring(2, 15)
-let isUsingZip = false
-
 fileInput.addEventListener("change", function whenImageIsUploaded() {
-	let img = document.createElement("img")
-	img.src = window.URL.createObjectURL(this.files[0])
 	if(this.files[0].name.endsWith(".gif")) {
-		gifFrames({ url: img.src, frames: "all", outputType: "canvas", cumulative: true }).then(function(frameData) {
+		gifFrames({ url: window.URL.createObjectURL(this.files[0]), frames: "all", outputType: "canvas", cumulative: true }).then(function(frameData) {
             let gifFrameArray = new Array()
             frameData.forEach(function(frame) {
                 var image = new Image()
@@ -30,37 +30,95 @@ fileInput.addEventListener("change", function whenImageIsUploaded() {
                 gifFrameArray.push(image)
             })
 
-            img.addEventListener("load", () => {
-                originalImageSize.width = frameData[0].frameInfo.width
-                originalImageSize.height = frameData[0].frameInfo.height
-                console.log(gifFrameArray)
-                convert(gifFrameArray)
-            })
+            originalImageSize.width = frameData[0].frameInfo.width
+            originalImageSize.height = frameData[0].frameInfo.height
+            console.log(gifFrameArray)
+            convert(gifFrameArray)
 		})
-	} else if(this.files[0].name.endsWith(".zip")) {
-		isUsingZip = true
-		var zip = new jszip()
-		zip.loadAsync(this.files[0]).then(function(zip) {
-			let videoFrameArray = new Array()
-			zip.forEach(function(relativePath, file) {
-				if(file.name.endsWith(".png")) {
-					let image = new Image()
-					file.async("base64").then(function(data) {
-						image.src = "data:image/png;base64," + data
-						console.log(image.src)
-						videoFrameArray.push(image)
-					})
-				}
-			})
+	} /** else if(this.files[0].name.endsWith(".mp4")) {
+		let file = this.files[0]
+		let fileName = file.name
+		let fileSize = (file.size / 1024).toFixed(2)
+		let fileType = file.type
+		let fileReader = new FileReader()
+		var b64str = ""
+		fileReader.onload = function(e) {
+			b64str = e.target.result
+		}
+		fileReader.readAsDataURL(file)
 
-			img.addEventListener("load", () => {
-				originalImageSize.width = videoFrameArray[0].width
-				originalImageSize.height = videoFrameArray[0].height
-				console.log(videoFrameArray)
-				convert(videoFrameArray)
-			})
+		var videoObj = document.createElement('video');
+		var displayedHeight=500;
+
+		if(videoObj.canPlayType(fileType)) {
+			videoObj.setAttribute('id','inputVideo');
+			videoObj.setAttribute('src', b64str);
+			videoObj.setAttribute('height', displayedHeight);
+		}
+
+		var vidHeight=videoObj.videoHeight;
+		var vidWidth=videoObj.videoWidth;
+		var bitmap = document.createElement('canvas');
+		bitmap.setAttribute('id', 'bitmap');
+		bitmap.setAttribute('width', vidWidth);
+		bitmap.setAttribute('height', vidHeight);
+
+		const inputVideo = document.getElementById('inputVideo');
+		const bitmapCanvas = document.getElementById('bitmap');
+		const bitmapCtx = bitmapCanvas.getContext('2d');
+		inputVideo.muted = true;
+		inputVideo.loop = false;
+		inputVideo.autoplay=true;
+		const background = () => {
+  			bitmapCtx.fillStyle = '#FFFFFF';
+  			bitmapCtx.fillRect(0, 0, vidWidth, vidHeight);
+		};
+
+		const encoder = new GIFEncoder(vidWidth, vidHeight);
+		encoder.setRepeat(0);
+		encoder.setDelay(500);
+
+		const step = async() => {
+			background();
+			await new Promise(resolve => {
+			  	bitmapCtx.drawImage(inputVideo, 0, 0, vidWidth, vidHeight);
+			  	frameB64Str = bitmapCanvas.toDataURL();
+				encoder.addFrame(bitmapCtx);
+			  	resolve();
+			});
+			window.requestAnimationFrame(step);
+		};
+		inputVideo.addEventListener('play', () => {
+			encoder.start();
+			step();
+			window.requestAnimationFrame(step);
+		});
+
+		inputVideo.addEventListener('ended', () => {
+			encoder.finish();
+		});
+
+		var newFileType='image/gif';
+		var readableStream=encoder.stream();
+		var binary_gif=readableStream.getData();
+		var gifB64Str= 'data:'+ newFileType +';base64,'+ encode64(binary_gif);
+
+		gifFrames({ url: gifB64Str, frames: "all", outputType: "canvas", cumulative: true }).then(function(frameData) {
+            let gifFrameArray = new Array()
+            frameData.forEach(function(frame) {
+                var image = new Image()
+                image.width = frame.frameInfo.width
+                image.height = frame.frameInfo.height
+                image.src = frame.getImage().toDataURL()
+                gifFrameArray.push(image)
+            })
+
+            originalImageSize.width = frameData[0].frameInfo.width
+            originalImageSize.height = frameData[0].frameInfo.height
+            console.log(gifFrameArray)
+            convert(gifFrameArray)
 		})
-	} else {
+	} */ else {
 		let imgArray = new Array()
 		for(let i = 0; i < this.files.length; i++) {
 			i = i % this.files.length
@@ -72,13 +130,34 @@ fileInput.addEventListener("change", function whenImageIsUploaded() {
 			imgArray.push(image)
 			imgArray.sort((a, b) => a.id - b.id)
 		}
+		originalImageSize.width = img.width
+		originalImageSize.height = img.height
+		console.log(imgArray)
+		convert(imgArray)
+	}
+})
 
-		img.addEventListener("load", () => {
-			originalImageSize.width = img.width
-			originalImageSize.height = img.height
-			console.log(imgArray)
-			convert(imgArray)
+document.getElementById("url-button").addEventListener("click", async function() {
+	if(url.value.endsWith(".gif")) {
+		let gifFrameArray = new Array()
+		const response = await axios.get(url.value,  { responseType: 'arraybuffer' })
+		const buffer = Buffer.from(response.data, "utf-8")
+		await gifFrames({ url: `data:image/gif;base64,${buffer.toString("base64")}`, frames: "all", outputType: "canvas", cumulative: true }).then(function(frameData) {
+			frameData.forEach(function(frame) {
+				var image = new Image()
+				image.width = frame.frameInfo.width
+				image.height = frame.frameInfo.height
+				image.src = frame.getImage().toDataURL()
+				gifFrameArray.push(image)
+			})
 		})
+
+		originalImageSize.width = gifFrameArray[0].width
+    	originalImageSize.height = gifFrameArray[0].height
+        console.log(gifFrameArray)
+        convert(gifFrameArray)
+	} else {
+		alert("Please enter a valid URL")
 	}
 })
 
@@ -102,7 +181,7 @@ form.addEventListener("submit", function convertImage(event) {
 	}
 	console.log(imgArray)
 	convert(imgArray)
-	resetImageSize(imageDOM)
+	// resetImageSize(imageDOM)
 })
 
 function convertFrame(img) {
@@ -281,6 +360,7 @@ function convert(img) {
 		textarea.select()
 		if (!navigator.clipboard) {
 			document.execCommand("copy")
+			console.log("Copied to clipboard using the old method.")
 		} else {
 			navigator.clipboard.writeText(textarea.textContent).then(
 				function(){
