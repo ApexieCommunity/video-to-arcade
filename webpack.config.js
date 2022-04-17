@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
     mode: "none",
@@ -28,6 +29,10 @@ module.exports = {
         }),
         new webpack.ProvidePlugin({
             process: 'process/browser',
+        }),
+        new WorkboxPlugin.GenerateSW({
+            clientsClaim: true,
+            skipWaiting: true
         })
     ],
     devServer: {
