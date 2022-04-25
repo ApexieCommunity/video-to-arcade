@@ -14,7 +14,7 @@ const url = document.getElementById("url")
 const textarea = document.querySelector("textarea#code")
 
 if("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js").then(registration => {
+    navigator.serviceWorker.register("sw.js").then(registration => {
         console.log("Service worker registration successful with scope: ", registration.scope);
     }).catch(err => {
         console.log("Service worker registration failed: ", err);

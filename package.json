@@ -37,8 +37,7 @@
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
-    "util": "^0.12.4",
-    "workbox-webpack-plugin": "^6.5.3"
+    "util": "^0.12.4"
   },
   "devDependencies": {
     "webpack": "^5.72.0",
